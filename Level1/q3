@@ -1,0 +1,41 @@
+import numpy as np
+from math import cos, sin, pi
+from numpy.linalg import inv
+
+
+def get_homogeneous_transformation_matrix(x, y, ang_theta):
+    """ Returns a 3 by 3 homogeneous transformation matrix which captures translation (x,y) and rotation theta"""
+    ang_rad = ang_theta * pi / 180
+    return np.array([[cos(ang_rad), -sin(ang_rad), x], [sin(ang_rad), cos(ang_rad), y], [0, 0, 1]])
+
+
+def get_relative_homogeneous_transformation_matrix(mat1, mat2):
+    """ Returns a 3 by 3 homogeneous transformation matrix which represents the relative pose of 2 coordinate frames"""
+    return mat1 @ mat2
+
+
+def get_p_wrt_o(T, p):
+    """ Returns the bound vector of point p with respect to frame described by T in homogeneous form"""
+    return inv(T) @ p
+
+
+p_B = np.array([[1], [3], [1]])
+
+# Compute the transformation matrix
+T_A = get_homogeneous_transformation_matrix(3, 1, 90)
+T_B = get_homogeneous_transformation_matrix(2, 3, 45)
+
+# Compute relative pose
+A_T_B = get_relative_homogeneous_transformation_matrix(T_A, T_B)
+
+# Initialize point P in space
+p_B = np.array([[1], [3], [1]])
+
+# Compute bound vector of a point P wrt a frame
+p_O = get_p_wrt_o(T_B, p_B)
+
+# Print results
+print("Homogeneous transformation matrix for frame A: \n", T_A)
+print("Homogeneous transformation matrix for frame B: \n", T_B)
+print("Relative Homogeneous transformation matrix for frame B with respect to frame A: \n", A_T_B)
+print("Bound vector pf point P with respect to frame O: \n", p_O)
